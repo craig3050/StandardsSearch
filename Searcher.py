@@ -36,13 +36,16 @@ def return_list_of_standards(standard_name):
 
 
 def main():
-    standard_name = input("Input name of standard: ")
-    returned_list = return_list_of_standards(standard_name)
-    for item in returned_list:
-        print(f"Name: {item[0]}")
-        print(f"Title: {item[1]}")
-        print(f"Status: {item[5]} \n")
-
+    while True:
+        try:
+            standard_name = input("Input name of standard: ")
+            returned_list = return_list_of_standards(standard_name)
+            for item in returned_list:
+                print(f"Name: {item[0]}")
+                print(f"Title: {item[1]}")
+                print(f"Status: {item[5]} \n")
+        except Exception as e:
+            print(e)
 
 if __name__ == '__main__':
     main()
