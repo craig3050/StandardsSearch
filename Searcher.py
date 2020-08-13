@@ -4,28 +4,14 @@
 import requests
 from bs4 import BeautifulSoup
 import re
-import PyPDF2
 import os
+import argparse
+import pdfplumber
 
-sample_text = """
-The services will require to be heavily isolated from the fabric of the building to avoid the 
-transmission of noise between the interior and exterior and between internal spaces. Hangers and 
-vibration isolation mountings shall be a contractor design item to achieve the criteria defined by 
-Level acoustics. 
-The smoke ventilation system shall be a specialist contractor design and installation to achieve the 
-requirements of BS EN 12101, the documents show the design intent and the WSP fire report 
-provides the necessary performance criteria that the smoke control specialist shall develop into a 
-full scheme. 
-Calculation of all feed and expansion and the selection of anchor points and expansion joints shall be 
-the responsibility of the specialist supplier. Care shall be taken that the design of the system does 
-not compromise the acoustic performance or the structural requirement for movement joints. 
-The BMS shall be designed by a specialist developing the description of operations into a full points 
-schedule with all the necessary sensors, actuators, control algorithms, software engineering, field 
-wiring and containment for the controls to form a fully functioning system that will enable the 
-building to be operated in the most energy efficient manner.  
-Water treatment and chemical flushing and cleaning of the distribution systems shall be undertaken 
-by a specialist  BS7671 BS EN 60309 BS 8266 ISO53 ISO 12323423 ISO1 EN54
-"""
+
+parser = argparse.ArgumentParser(description='Extract text from a spec and check the standards')
+parser.add_argument('in_filename', help='Input filename (`-` for stdin)')
+
 
 def return_list_of_standards(standard_name):
     URL = f"https://shop.bsigroup.com/SearchResults/?q={standard_name}&pg=1&no=100&c=100&t=p"
@@ -67,28 +53,67 @@ def text_search_for_standards(input_text):
 
     return list_of_standards_in_text
 
+def extract_text_from_pdf(in_filename, **input_kwargs):
+    with pdfplumber.open(in_filename) as pdf:
+        full_text = ""
+        pages = pdf.pages
+        for i, pg in enumerate(pages):
+            text = pages[i].extract_text()
+            full_text += text
+        #first_page = pdf.pages[0]
+        #print(first_page.extract_text())
+        #print(full_text)
+        return full_text
 
 def main():
     try:
+        #Get the file name of the document you wish to search
+        args = parser.parse_args()
+
+        sample_text = extract_text_from_pdf(args.in_filename)
+        print(sample_text)
+
         list_of_standards_in_text = text_search_for_standards(sample_text)
         print(list_of_standards_in_text)
 
-        print("Summary of Standards:")
-        print("""
+        list_of_standards_in_text = list(set(list_of_standards_in_text))
 
-        """)
+        print("\n\n\n sorted \n\n\n")
+        print(list_of_standards_in_text)
 
-        for standard_name in list_of_standards_in_text:
-            print("=======================================")
-            print(standard_name)
-            print("""
+        with open('standards_review.txt', 'w', encoding="utf-8") as standards_review_doc:
+
+            standards_review_doc.write("Summary of Standards:")
+            standards_review_doc.write("""
 
             """)
-            returned_list = return_list_of_standards(standard_name)
-            for item in returned_list:
-                print(f"Name: {item[0]}")
-                print(f"Title: {item[1]}")
-                print(f"Status: {item[5]} \n")
+
+            for standard_name in list_of_standards_in_text:
+                standards_review_doc.write("\n\n=======================================\n\n")
+                standards_review_doc.write(standard_name)
+                standards_review_doc.write("\n\n\n")
+                returned_list = return_list_of_standards(standard_name)
+                for item in returned_list:
+                    standards_review_doc.write(f"Name: {item[0]}\n")
+                    standards_review_doc.write(f"Title: {item[1]}\n")
+                    standards_review_doc.write(f"Status: {item[5]} \n\n")
+
+        # print("Summary of Standards:")
+        # print("""
+        #
+        # """)
+        #
+        # for standard_name in list_of_standards_in_text:
+        #     print("=======================================")
+        #     print(standard_name)
+        #     print("""
+        #
+        #     """)
+        #     returned_list = return_list_of_standards(standard_name)
+        #     for item in returned_list:
+        #         print(f"Name: {item[0]}")
+        #         print(f"Title: {item[1]}")
+        #         print(f"Status: {item[5]} \n")
 
     except Exception as e:
         print(e)
