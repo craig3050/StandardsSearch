@@ -44,7 +44,7 @@ def return_list_of_standards(standard_name):
 
 
 def text_search_for_standards(input_text):
-    regex = r"(BS|BS |BS EN|EN|EN |ISO|ISO )\d+"
+    regex = r"(BS|BS |BS EN|EN|EN |ISO|ISO |IEC|IEC |BSRIABG |DW)\d+"
 
     matches = re.finditer(regex, input_text, re.MULTILINE)
     list_of_standards_in_text = []
@@ -81,7 +81,9 @@ def main():
         print("\n\n\n sorted \n\n\n")
         print(list_of_standards_in_text)
 
-        with open('standards_review.txt', 'w', encoding="utf-8") as standards_review_doc:
+        filename_to_write = f"{args.in_filename}.txt"
+
+        with open(filename_to_write, 'w', encoding="utf-8") as standards_review_doc:
 
             standards_review_doc.write("Summary of Standards:")
             standards_review_doc.write("""
@@ -98,22 +100,6 @@ def main():
                     standards_review_doc.write(f"Title: {item[1]}\n")
                     standards_review_doc.write(f"Status: {item[5]} \n\n")
 
-        # print("Summary of Standards:")
-        # print("""
-        #
-        # """)
-        #
-        # for standard_name in list_of_standards_in_text:
-        #     print("=======================================")
-        #     print(standard_name)
-        #     print("""
-        #
-        #     """)
-        #     returned_list = return_list_of_standards(standard_name)
-        #     for item in returned_list:
-        #         print(f"Name: {item[0]}")
-        #         print(f"Title: {item[1]}")
-        #         print(f"Status: {item[5]} \n")
 
     except Exception as e:
         print(e)
