@@ -98,6 +98,7 @@ def main():
                 for item in returned_list:
                     standards_review_doc.write(f"Name: {item[0]}\n")
                     standards_review_doc.write(f"Title: {item[1]}\n")
+                    standards_review_doc.write(f"Publish Date: {item[3]} \n")
                     standards_review_doc.write(f"Status: {item[5]} \n\n")
 
 
