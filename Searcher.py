@@ -44,7 +44,8 @@ def return_list_of_standards(standard_name):
 
 
 def text_search_for_standards(input_text):
-    regex = r"(BS|BS |BS EN|EN|EN |ISO|ISO |IEC|IEC |BSRIABG |DW)\d+"
+    #regex = r"(BS|BS |BS EN|EN|EN |ISO|ISO |IEC|IEC |BSRIABG |DW)\d+"
+    regex = r"(BS|BS EN|EN|ISO|IEC|BSRIABG|DW) ?\d+"
 
     matches = re.finditer(regex, input_text, re.MULTILINE)
     list_of_standards_in_text = []
